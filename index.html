@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>June Unit Booking</title>
+    <style>
+        /* Modern App Styling - Fully Responsive */
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Glassmorphism Card Effect */
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 30px 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            color: #1e293b;
+            margin: 0 0 24px 0;
+            font-size: 1.8rem;
+            text-align: center;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-top: -15px;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        label {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 10px;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            background-color: #f8fafc;
+            color: #0f172a;
+            margin-bottom: 24px;
+            appearance: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: #fff;
+        }
+
+        @media (hover: hover) {
+            select:hover:not(:disabled) {
+                border-color: #cbd5e1;
+                background-color: #fff;
+            }
+        }
+
+        select:disabled {
+            background-color: #e2e8f0;
+            color: #94a3b8;
+            border-color: #cbd5e1;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        #calendar-section {
+            display: none;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .day-btn {
+            background-color: #f1f5f9;
+            border: none;
+            border-radius: 12px;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        @media (hover: hover) {
+            .day-btn:hover {
+                background-color: #e2e8f0;
+                transform: translateY(-2px);
+            }
+
+            .day-btn.selected:hover {
+                background-color: #4f46e5;
+            }
+        }
+
+        .day-btn.selected {
+            background-color: #6366f1;
+            color: white;
+            transform: scale(0.95) translateY(0);
+            box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        #fan-section {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .save-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (hover: hover) {
+            .save-btn:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            }
+        }
+
+        .save-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 10px rgba(79, 70, 229, 0.2);
+        }
+
+        .save-btn:disabled {
+            background: #94a3b8;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        #status-msg {
+            text-align: center;
+            font-weight: 700;
+            margin-top: 16px;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            min-height: 20px;
+        }
+
+        .loading-pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        /* The New Link Styling */
+        .main-page-link {
+            display: block;
+            text-align: center;
+            margin-top: 24px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .main-page-link:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        @media (min-width: 600px) {
+            .container {
+                padding: 40px;
+                border-radius: 30px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .calendar-grid {
+                gap: 12px;
+            }
+
+            .day-btn {
+                font-size: 1.2rem;
+                border-radius: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <div class="container">
+            <h1>🗓️ June Booking</h1>
+            <p class="subtitle">Select availability & schedule works</p>
+
+            <label for="unit-select">🏢 Select Unit:</label>
+            <select id="unit-select" disabled>
+                <option value="" disabled selected id="default-option">🔄 Loading secure database...</option>
+                <option value="#12-119">#12-119</option>
+                <option value="#13-105">#13-105</option>
+                <option value="#17-127">#17-127</option>
+                <option value="#07-141">#07-141</option>
+                <option value="#07-131">#07-131</option>
+                <option value="#07-137">#07-137</option>
+                <option value="#17-115">#17-115</option>
+                <option value="#15-117">#15-117</option>
+                <option value="#12-107">#12-107</option>
+                <option value="#03-125">#03-125</option>
+                <option value="#07-139">#07-139</option>
+                <option value="#15-125">#15-125</option>
+            </select>
+
+            <div id="calendar-section">
+                <label>📅 Available Days (June):</label>
+                <div class="calendar-grid" id="calendar-grid"></div>
+
+                <div id="fan-section">
+                    <label>🛠️ Fan Installation Date:</label>
+                    <select id="fan-select">
+                        <option value="">-- Choose from available dates --</option>
+                    </select>
+                </div>
+
+                <button class="save-btn" id="save-btn" onclick="saveData()">💾 Save Schedule</button>
+            </div>
+
+            <!-- NEW: The Main Page Link -->
+            <a href="https://jonahchoon.github.io/HDBHeatResilience/" class="main-page-link" target="_blank">🏠 View
+                Main Page</a>
+
+        </div>
+        <div id="status-msg" class="loading-pulse">Connecting to server...</div>
+    </div>
+
+    <script>
+        // --- IMPORTANT: PASTE YOUR APP SCRIPT WEB APP URL HERE ---
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzP1NP7VOL1V9eJ96qQVC8OTbTzZwu-nP3Qf6IRKMRX8cN9KTlYctWUBmaFlinOICT-/exec";
+
+        let database = {};
+        const statusMsg = document.getElementById('status-msg');
+        const unitSelect = document.getElementById('unit-select');
+        const defaultOption = document.getElementById('default-option');
+        const calendarSection = document.getElementById('calendar-section');
+        const calendarGrid = document.getElementById('calendar-grid');
+        const fanSection = document.getElementById('fan-section');
+        const fanSelect = document.getElementById('fan-select');
+
+        // Build the 30 calendar buttons
+        for (let i = 1; i <= 30; i++) {
+            const btn = document.createElement('button');
+            btn.className = 'day-btn';
+            btn.innerText = i;
+            btn.onclick = () => {
+                btn.classList.toggle('selected');
+                updateFanOptions();
+            };
+            calendarGrid.appendChild(btn);
+        }
+
+        // Fetch data
+        window.onload = () => {
+            fetch(SCRIPT_URL)
+                .then(response => response.json())
+                .then(data => {
+                    database = data;
+                    unitSelect.disabled = false;
+                    defaultOption.text = "-- Tap to choose a unit --";
+                    statusMsg.classList.remove('loading-pulse');
+                    statusMsg.innerText = "✨ Connected to database";
+                    setTimeout(() => statusMsg.innerText = "", 2500);
+                })
+                .catch(error => {
+                    statusMsg.classList.remove('loading-pulse');
+                    statusMsg.innerText = "⚠️ Error loading data. Refresh page.";
+                });
+        };
+
+        // Select unit logic
+        unitSelect.addEventListener('change', (e) => {
+            const selectedUnit = e.target.value;
+            calendarSection.style.display = "block";
+
+            document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('selected'));
+            fanSelect.innerHTML = '<option value="">-- Choose from available dates --</option>';
+            fanSection.style.display = "none";
+
+            if (database[selectedUnit]) {
+                const savedData = database[selectedUnit];
+
+                document.querySelectorAll('.day-btn').forEach(btn => {
+                    if (savedData.dates.includes(btn.innerText)) {
+                        btn.classList.add('selected');
+                    }
+                });
+
+                updateFanOptions();
+
+                if (savedData.fanDate) {
+                    fanSelect.value = savedData.fanDate;
+                }
+            }
+        });
+
+        // Update fan options
+        function updateFanOptions() {
+            const selectedButtons = document.querySelectorAll('.day-btn.selected');
+            const dates = Array.from(selectedButtons).map(btn => btn.innerText);
+            const currentFanSelection = fanSelect.value;
+
+            fanSelect.innerHTML = '<option value="">-- Choose from available dates --</option>';
+
+            if (dates.length > 0) {
+                fanSection.style.display = "block";
+                dates.forEach(date => {
+                    const option = document.createElement('option');
+                    option.value = date;
+                    option.text = `June ${date}`;
+                    fanSelect.appendChild(option);
+                });
+                if (dates.includes(currentFanSelection)) {
+                    fanSelect.value = currentFanSelection;
+                }
+            } else {
+                fanSection.style.display = "none";
+            }
+        }
+
+        // Save data
+        function saveData() {
+            const selectedUnit = unitSelect.value;
+            const buttons = document.querySelectorAll('.day-btn.selected');
+            const dates = Array.from(buttons).map(btn => btn.innerText);
+            const fanDate = fanSelect.value;
+
+            statusMsg.classList.add('loading-pulse');
+            statusMsg.innerText = "⏳ Saving secure data...";
+            document.getElementById('save-btn').disabled = true;
+
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ unit: selectedUnit, dates: dates, fanDate: fanDate })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    database[selectedUnit] = { dates: dates, fanDate: fanDate };
+                    statusMsg.classList.remove('loading-pulse');
+                    statusMsg.innerText = "✅ Saved successfully!";
+                    document.getElementById('save-btn').disabled = false;
+                    setTimeout(() => statusMsg.innerText = "", 3000);
+                })
+                .catch(error => {
+                    statusMsg.classList.remove('loading-pulse');
+                    statusMsg.innerText = "❌ Failed to save. Check connection.";
+                    document.getElementById('save-btn').disabled = false;
+                });
+        }
+    </script>
+
+</body>
+
+</html>
